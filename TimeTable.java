@@ -12,7 +12,7 @@ public class TimeTable extends JFrame implements ActionListener {
 	
 	public TimeTable() {
 		super("Dynamic Time Table");
-		setSize(500, 800);
+		setSize(600, 900);
 		setLayout(new FlowLayout());
 		
 		screen.setPreferredSize(new Dimension(500, 900));
