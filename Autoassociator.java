@@ -8,8 +8,6 @@ public class Autoassociator {
         int numNeurons = courses.length();
         weights = new int[numNeurons][numNeurons];
         trainingCapacity = numNeurons;
-
-        // Initialize weights randomly
         Random random = new Random();
         for (int i = 0; i < numNeurons; i++) {
             for (int j = 0; j < numNeurons; j++) {
@@ -38,17 +36,14 @@ public class Autoassociator {
 
     public int unitUpdate(int neurons[]) {
         Random random = new Random();
-        int index = random.nextInt(neurons.length); // Select a random neuron
+        int index = random.nextInt(neurons.length); 
         int sum = 0;
 
-        // Calculate the activation sum for the selected neuron
         for (int i = 0; i < neurons.length; i++) {
             if (i != index) {
                 sum += weights[i][index] * neurons[i];
             }
         }
-
-        // Update the selected neuron based on the activation sum
         neurons[index] = sum >= 0 ? 1 : -1;
 
         return index;
@@ -56,15 +51,12 @@ public class Autoassociator {
 
     public void unitUpdate(int neurons[], int index) {
         int sum = 0;
-
-        // Calculate the activation sum for the specified neuron
         for (int i = 0; i < neurons.length; i++) {
             if (i != index) {
                 sum += weights[i][index] * neurons[i];
             }
         }
 
-        // Update the specified neuron based on the activation sum
         neurons[index] = sum >= 0 ? 1 : -1;
     }
 
