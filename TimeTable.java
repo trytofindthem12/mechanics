@@ -15,7 +15,7 @@ public class TimeTable extends JFrame implements ActionListener {
 		setSize(500, 800);
 		setLayout(new FlowLayout());
 		
-		screen.setPreferredSize(new Dimension(400, 800));
+		screen.setPreferredSize(new Dimension(500, 900));
 		add(screen);
 		
 		setTools();
@@ -28,7 +28,7 @@ public class TimeTable extends JFrame implements ActionListener {
 		String capField[] = {"Slots:", "Courses:", "Clash File:", "Iters:", "Shift:"};
 		field = new JTextField[capField.length];
 		
-		String capButton[] = {"Load", "Start", "Step", "Print", "Exit"};
+		String capButton[] = {"Load", "Start", "Step", "Print", "Exit", "Continue"};
 		tool = new JButton[capButton.length];
 		
 		tools.setLayout(new GridLayout(2 * capField.length + capButton.length, 1));
@@ -46,9 +46,9 @@ public class TimeTable extends JFrame implements ActionListener {
 		}
 		
 		field[0].setText("17");
-		field[1].setText("190");
+		field[1].setText("461");
 		field[2].setText("ear-f-83.stu");
-		field[3].setText("1");
+		field[3].setText("22");
 	}
 	
 	public void draw() {
@@ -106,6 +106,10 @@ public class TimeTable extends JFrame implements ActionListener {
 			break;
 		case 4:
 			System.exit(0);
+		case 5: 
+            		courses.iterate(Integer.parseInt(field[4].getText()));
+            		draw();
+            		break;
 		}
 	}
 
