@@ -1,5 +1,6 @@
 import java.io.*;
 import java.util.StringTokenizer;
+import java.util.Arrays;
 
 public class CourseArray {
 
@@ -90,4 +91,16 @@ public class CourseArray {
 		for (int i = 1; i < elements.length; i++)
 			System.out.println(i + "\t" + elements[i].mySlot);
 	}
+	public int[] getTimeSlot(int index) {
+        int[] timeSlot = new int[this.period];
+        Arrays.fill(timeSlot, -1);
+        if (index < this.elements.length && this.elements[index] != null) {
+            int slot = this.elements[index].mySlot;
+            if (slot >= 0 && slot < this.period) {
+                timeSlot[slot] = 1;
+            }
+        }
+
+        return timeSlot;
+    }
 }
