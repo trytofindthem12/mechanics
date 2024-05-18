@@ -1,119 +1,36 @@
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.io.IOException;
+import java.util.*;
 
-public class TimeTable extends JFrame implements ActionListener {
+public class Timetable {
 
-	private JPanel screen = new JPanel(), tools = new JPanel();
-	private JButton tool[];
-	private JTextField field[];
-	private CourseArray courses;
-	private Color CRScolor[] = {Color.RED, Color.GREEN, Color.BLACK};
-	
-	public TimeTable() {
-		super("Dynamic Time Table");
-		setSize(600, 900);
-		setLayout(new FlowLayout());
-		
-		screen.setPreferredSize(new Dimension(500, 900));
-		add(screen);
-		
-		setTools();
-		add(tools);
-		
-		setVisible(true);
-	}
-	
-	public void setTools() {
-		String capField[] = {"Slots:", "Courses:", "Clash File:", "Iters:", "Shift:"};
-		field = new JTextField[capField.length];
-		
-		String capButton[] = {"Load", "Start", "Step", "Print", "Exit", "Continue"};
-		tool = new JButton[capButton.length];
-		
-		tools.setLayout(new GridLayout(2 * capField.length + capButton.length, 1));
-		
-		for (int i = 0; i < field.length; i++) {
-			tools.add(new JLabel(capField[i]));
-			field[i] = new JTextField(5);
-			tools.add(field[i]);
-		}
-		
-		for (int i = 0; i < tool.length; i++) {
-			tool[i] = new JButton(capButton[i]);
-			tool[i].addActionListener(this);
-			tools.add(tool[i]);
-		}
-		
-		field[0].setText("17");
-		field[1].setText("461");
-		field[2].setText("ear-f-83.stu");
-		field[3].setText("22");
-	}
-	
-	public void draw() {
-		Graphics g = screen.getGraphics();
-		int width = Integer.parseInt(field[0].getText()) * 10;
-		for (int courseIndex = 1; courseIndex < courses.length(); courseIndex++) {
-			g.setColor(CRScolor[courses.status(courseIndex) > 0 ? 0 : 1]);
-			g.drawLine(0, courseIndex, width, courseIndex);
-			g.setColor(CRScolor[CRScolor.length - 1]);
-			g.drawLine(10 * courses.slot(courseIndex), courseIndex, 10 * courses.slot(courseIndex) + 10, courseIndex);
-		}
-	}
-	
-	private int getButtonIndex(JButton source) {
-		int result = 0;
-		while (source != tool[result]) result++;
-		return result;
-	}
-	
-	public void actionPerformed(ActionEvent click) {
-		int min, step, clashes;
-		
-		switch (getButtonIndex((JButton) click.getSource())) {
-		case 0:
-			int slots = Integer.parseInt(field[0].getText());
-			courses = new CourseArray(Integer.parseInt(field[1].getText()) + 1, slots);
-			courses.readClashes(field[2].getText());
-			draw();
-			break;
-		case 1:
-			min = Integer.MAX_VALUE;
-			step = 0;
-			for (int i = 1; i < courses.length(); i++) courses.setSlot(i, 0);
-			
-			for (int iteration = 1; iteration <= Integer.parseInt(field[3].getText()); iteration++) {
-				courses.iterate(Integer.parseInt(field[4].getText()));
-				draw();
-				clashes = courses.clashesLeft();
-				if (clashes < min) {
-					min = clashes;
-					step = iteration;
-				}
-			}
-			System.out.println("Shift = " + field[4].getText() + "\tMin clashes = " + min + "\tat step " + step);
-			setVisible(true);
-			break;
-		case 2:
-			courses.iterate(Integer.parseInt(field[4].getText()));
-			draw();
-			break;
-		case 3:
-			System.out.println("Exam\tSlot\tClashes");
-			for (int i = 1; i < courses.length(); i++)
-				System.out.println(i + "\t" + courses.slot(i) + "\t" + courses.status(i));
-			break;
-		case 4:
-			System.exit(0);
-		case 5: 
-            		courses.iterate(Integer.parseInt(field[4].getText()));
-            		draw();
-            		break;
-		}
-	}
+    public static void main(String[] args) throws IOException {
+        String studentFile = "kfu-s-93.stu";
+        String courseFile = "kfu-s-93.crs";
 
-	public static void main(String[] args) {
-		new TimeTable();
-	}
+        Map<Integer, List<Integer>> studentExams = DataParser.parseStudents(studentFile);
+        Map<Integer, Integer> courses = DataParser.parseCourses(courseFile);
+
+        int numExams = courses.size();
+        int numTimeslots = 20; // Adjust this as necessary
+
+        GeneticAlgorithm ga = new GeneticAlgorithm(numExams, numTimeslots, studentExams);
+        List<int[]> population = ga.generateInitialPopulation(50);
+        int[] bestTimetable = ga.geneticAlgorithm(population, 100);
+        System.out.println("Best Timetable:");
+        for (int i : bestTimetable) {
+            System.out.print(i + " ");
+        }
+
+        // Train Hopfield Network with the best timetable
+        HopfieldNetwork hn = new HopfieldNetwork(numExams);
+        int[][] patterns = {bestTimetable}; // Use the best timetable as the training pattern
+        hn.train(patterns);
+
+        // Optimize the timetable using Hopfield Network
+        int[] optimizedTimetable = hn.run(bestTimetable, 10);
+        System.out.println("\nOptimized Timetable:");
+        for (int i : optimizedTimetable) {
+            System.out.print(i + " ");
+        }
+    }
 }
