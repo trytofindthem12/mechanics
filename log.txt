@@ -1,0 +1,1 @@
+Shift = 10	Min clashes = 124	at step 5

@@ -1,6 +1,4 @@
-import java.util.Random;
-
-public class Autoassociator {
+class Autoassociator {
     private int weights[][];
     private int trainingCapacity;
 
@@ -8,20 +6,15 @@ public class Autoassociator {
         int numNeurons = courses.length();
         weights = new int[numNeurons][numNeurons];
         trainingCapacity = numNeurons;
-        Random random = new Random();
         for (int i = 0; i < numNeurons; i++) {
             for (int j = 0; j < numNeurons; j++) {
                 if (i != j) {
-                    weights[i][j] = random.nextBoolean() ? 1 : -1;
+                    weights[i][j] = Math.random() > 0.5 ? 1 : -1;
                 } else {
                     weights[i][j] = 0;
                 }
             }
         }
-    }
-
-    public int getTrainingCapacity() {
-        return trainingCapacity;
     }
 
     public void training(int pattern[]) {
@@ -35,8 +28,7 @@ public class Autoassociator {
     }
 
     public int unitUpdate(int neurons[]) {
-        Random random = new Random();
-        int index = random.nextInt(neurons.length); 
+        int index = (int) (Math.random() * neurons.length);
         int sum = 0;
 
         for (int i = 0; i < neurons.length; i++) {
@@ -75,3 +67,5 @@ public class Autoassociator {
         }
     }
 }
+
+       

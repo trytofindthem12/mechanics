@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 import javax.swing.*;
 
 public class TimeTable extends JFrame implements ActionListener {
@@ -9,6 +10,7 @@ public class TimeTable extends JFrame implements ActionListener {
     private JTextField field[];
     private CourseArray courses;
     private Color CRScolor[] = { Color.RED, Color.GREEN, Color.BLACK };
+    private BufferedWriter logFile;
 
     public TimeTable() {
         super("Dynamic Time Table");
@@ -20,6 +22,13 @@ public class TimeTable extends JFrame implements ActionListener {
 
         setTools();
         add(tools);
+
+        // Open log file
+        try {
+            logFile = new BufferedWriter(new FileWriter("log.txt"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         setVisible(true);
     }
@@ -95,7 +104,12 @@ public class TimeTable extends JFrame implements ActionListener {
                         step = iteration;
                     }
                 }
-                System.out.println("Shift = " + field[4].getText() + "\tMin clashes = " + min + "\tat step " + step);
+                try {
+                    logFile.write("Shift = " + field[4].getText() + "\tMin clashes = " + min + "\tat step " + step + "\n");
+                    logFile.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 setVisible(true);
                 break;
             case 2:
@@ -108,6 +122,12 @@ public class TimeTable extends JFrame implements ActionListener {
                     System.out.println(i + "\t" + courses.slot(i) + "\t" + courses.status(i));
                 break;
             case 4:
+                // Close log file
+                try {
+                    logFile.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 System.exit(0);
                 break;
             case 5: // Continue button action
@@ -118,6 +138,7 @@ public class TimeTable extends JFrame implements ActionListener {
     }
 
     public static void main(String[] args) {
-        new TimeTable();
+		        new TimeTable();
     }
 }
+
